@@ -1,4 +1,4 @@
-import { assertSpyCall, spy, assertSpyCalls } from "@std/testing/mock";
+import { assertSpyCall, assertSpyCalls, spy } from "@std/testing/mock";
 import { assertEquals } from "@std/assert/equals";
 import { signal } from "./mod.ts";
 

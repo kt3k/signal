@@ -20,7 +20,7 @@ class Signal<T> {
    *
    * @returns The current value of the signal
    */
-  get() {
+  get(): T {
     return this.#val;
   }
 

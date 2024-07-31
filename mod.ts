@@ -7,7 +7,7 @@ const mitt = mitt_ as unknown as typeof mitt_.default;
  *
  * @experimental
  */
-class Signal<T> {
+export class Signal<T> {
   #e: mitt_.Emitter<{ e: T }>;
   #val: T;
   constructor(val: T) {

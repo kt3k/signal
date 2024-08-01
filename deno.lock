@@ -6,8 +6,7 @@
       "jsr:@std/assert@^1.0.1": "jsr:@std/assert@1.0.1",
       "jsr:@std/internal@^1.0.0": "jsr:@std/internal@1.0.1",
       "jsr:@std/internal@^1.0.1": "jsr:@std/internal@1.0.1",
-      "jsr:@std/testing@^0.225.3": "jsr:@std/testing@0.225.3",
-      "npm:mitt@^3.0.1": "npm:mitt@3.0.1"
+      "jsr:@std/testing@^0.225.3": "jsr:@std/testing@0.225.3"
     },
     "jsr": {
       "@std/assert@1.0.0-rc.2": {
@@ -31,20 +30,13 @@
           "jsr:@std/assert@1.0.0-rc.2"
         ]
       }
-    },
-    "npm": {
-      "mitt@3.0.1": {
-        "integrity": "sha512-vKivATfr97l2/QBCYAkXYDbrIWPM2IIKEl7YPhjCvKlG3kE2gm+uBo6nEXK3M5/Ffh/FLpKExzOQ3JJoJGFKBw==",
-        "dependencies": {}
-      }
     }
   },
   "remote": {},
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@^1.0.1",
-      "jsr:@std/testing@^0.225.3",
-      "npm:mitt@^3.0.1"
+      "jsr:@std/testing@^0.225.3"
     ]
   }
 }

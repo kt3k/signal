@@ -1,5 +1,5 @@
 // Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
-// Copyright 2021 Jason Miller. All rights reserved. MIT license.
+// Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
 
 export type EventType = string | symbol;
 
@@ -24,8 +24,6 @@ export type EventHandlerMap<Events extends Record<EventType, unknown>> = Map<
 >;
 
 export interface Emitter<Events extends Record<EventType, unknown>> {
-  all: EventHandlerMap<Events>;
-
   on<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): void;
   on(type: "*", handler: WildcardHandler<Events>): void;
 
@@ -46,20 +44,15 @@ export interface Emitter<Events extends Record<EventType, unknown>> {
  * @name mitt
  * @returns {Mitt}
  */
-export default function mitt<Events extends Record<EventType, unknown>>(
-  all?: EventHandlerMap<Events>,
-): Emitter<Events> {
+export default function mitt<
+  Events extends Record<EventType, unknown>,
+>(): Emitter<Events> {
   type GenericEventHandler =
     | Handler<Events[keyof Events]>
     | WildcardHandler<Events>;
-  all = all || new Map();
+  const all = new Map();
 
   return {
-    /**
-     * A Map of event names to registered handler functions.
-     */
-    all,
-
     /**
      * Register an event handler for the given type.
      * @param {string|symbol} type Type of event to listen for, or `'*'` for all events
@@ -67,7 +60,7 @@ export default function mitt<Events extends Record<EventType, unknown>>(
      * @memberOf mitt
      */
     on<Key extends keyof Events>(type: Key, handler: GenericEventHandler) {
-      const handlers: Array<GenericEventHandler> | undefined = all!.get(type);
+      const handlers: Array<GenericEventHandler> | undefined = all.get(type);
       if (handlers) {
         handlers.push(handler);
       } else {
@@ -83,7 +76,7 @@ export default function mitt<Events extends Record<EventType, unknown>>(
      * @memberOf mitt
      */
     off<Key extends keyof Events>(type: Key, handler?: GenericEventHandler) {
-      const handlers: Array<GenericEventHandler> | undefined = all!.get(type);
+      const handlers: Array<GenericEventHandler> | undefined = all.get(type);
       if (handlers) {
         if (handler) {
           handlers.splice(handlers.indexOf(handler) >>> 0, 1);
@@ -99,26 +92,16 @@ export default function mitt<Events extends Record<EventType, unknown>>(
      *
      * Note: Manually firing '*' handlers is not supported.
      *
-     * @param {string|symbol} type The event type to invoke
-     * @param {Any} [evt] Any value (object is recommended and powerful), passed to each handler
-     * @memberOf mitt
+     * @param type The event type to invoke
+     * @param [evt] Any value (object is recommended and powerful), passed to each handler
      */
     emit<Key extends keyof Events>(type: Key, evt?: Events[Key]) {
-      let handlers = all!.get(type);
+      const handlers = all.get(type);
       if (handlers) {
         (handlers as EventHandlerList<Events[keyof Events]>)
           .slice()
           .map((handler) => {
             handler(evt!);
-          });
-      }
-
-      handlers = all!.get("*");
-      if (handlers) {
-        (handlers as WildCardEventHandlerList<Events>)
-          .slice()
-          .map((handler) => {
-            handler(type, evt!);
           });
       }
     },

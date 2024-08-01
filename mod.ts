@@ -1,6 +1,6 @@
-import mitt_ from "mitt";
+// Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
 
-const mitt = mitt_ as unknown as typeof mitt_.default;
+import mitt, { type Emitter } from "./mitt.ts";
 
 /**
  * Signal class.
@@ -8,7 +8,7 @@ const mitt = mitt_ as unknown as typeof mitt_.default;
  * @experimental
  */
 export class Signal<T> {
-  #e: mitt_.Emitter<{ e: T }>;
+  #e: Emitter<{ e: T }>;
   #val: T;
   constructor(val: T) {
     this.#e = mitt<{ e: T }>();

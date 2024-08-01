@@ -10,8 +10,8 @@ type Handler<T = unknown> = (event: T) => void;
 export class Signal<T> {
   #val: T;
   #handlers: Handler<T>[] = [];
-  constructor(val: T) {
-    this.#val = val;
+  constructor(value: T) {
+    this.#val = value;
   }
 
   /**
@@ -26,14 +26,35 @@ export class Signal<T> {
   /**
    * Update the signal value.
    *
-   * @param val The new value of the signal
+   * @param value The new value of the signal
    */
-  update(val: T) {
-    if (this.#val !== val) {
-      this.#val = val;
+  update(value: T) {
+    if (this.#val !== value) {
+      this.#val = value;
       this.#handlers.forEach((handler) => {
-        handler(val);
+        handler(value);
       });
+    }
+  }
+
+  /**
+   * Update the signal value by comparing the fields of the new value.
+   *
+   * @param value The new value of the signal
+   */
+  updateByFields(value: T) {
+    if (typeof value !== "object" || value === null) {
+      throw new Error("value must be an object");
+    }
+    for (const key of Object.keys(value)) {
+      // deno-lint-ignore no-explicit-any
+      if ((this.#val as any)[key] !== (value as any)[key]) {
+        this.#val = { ...value };
+        this.#handlers.forEach((handler) => {
+          handler(this.#val);
+        });
+        break;
+      }
     }
   }
 

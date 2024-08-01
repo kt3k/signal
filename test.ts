@@ -33,3 +33,31 @@ Deno.test("signal() creates Signal", () => {
   s.update(5);
   assertSpyCalls(cb, 3);
 });
+
+Deno.test("signal() creates Signal with object", () => {
+  const s = signal({ x: 0, y: 0 });
+
+  assertEquals(s.get(), { x: 0, y: 0 });
+
+  const cb = spy();
+
+  const stop = s.onChange(cb);
+
+  assertSpyCalls(cb, 0);
+
+  s.update({ x: 1, y: 0 });
+
+  assertSpyCalls(cb, 1);
+  assertSpyCall(cb, 0, { args: [{ x: 1, y: 0 }] });
+
+  s.update({ x: 1, y: 0 });
+
+  assertSpyCalls(cb, 2);
+  assertSpyCall(cb, 1, { args: [{ x: 1, y: 0 }] });
+
+  s.updateByFields({ x: 1, y: 0 });
+
+  assertSpyCalls(cb, 2);
+
+  stop();
+});

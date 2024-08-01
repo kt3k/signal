@@ -1,7 +1,5 @@
 // Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
-// Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
-
-export type EventType = string;
+// Copyright 2021 Json Miller. All rights reserved. MIT license.
 
 // An event handler can take an optional event argument
 // and should not return a value
@@ -10,83 +8,54 @@ export type Handler<T = unknown> = (event: T) => void;
 // An array of all currently registered event handlers for a type
 export type EventHandlerList<T = unknown> = Array<Handler<T>>;
 
-// A map of event types and their corresponding event handlers.
-export type EventHandlerMap<Events extends Record<EventType, unknown>> = Map<
-  keyof Events,
-  EventHandlerList<Events[keyof Events]>
->;
-
-export interface Emitter<Events extends Record<EventType, unknown>> {
-  on<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>): void;
-
-  off<Key extends keyof Events>(
-    type: Key,
-    handler?: Handler<Events[Key]>,
-  ): void;
-
-  emit<Key extends keyof Events>(type: Key, event: Events[Key]): void;
+export interface Emitter<Event extends unknown> {
+  on(handler: Handler<Event>): void;
+  off(handler?: Handler<Event>): void;
+  emit(event: Event): void;
 }
 
 /**
- * Mitt: Tiny (~200b) functional event emitter / pubsub.
- * @name mitt
+ * Creates event emitter.
  * @returns {Mitt}
  */
-export default function mitt<
-  Events extends Record<EventType, unknown>,
->(): Emitter<Events> {
-  const all = new Map();
+export default function mitt<Event extends unknown>(): Emitter<Event> {
+  const handlers: Handler<Event>[] = [];
 
   return {
     /**
-     * Register an event handler for the given type.
-     * @param type Type of event to listen for, or `'*'` for all events
+     * Register an event handler.
+     *
      * @param handler Function to call in response to given event
      */
-    on<Key extends keyof Events>(type: Key, handler: Handler<Events[Key]>) {
-      const handlers: Array<Handler<Events[Key]>> | undefined = all.get(type);
-      if (handlers) {
-        handlers.push(handler);
-      } else {
-        all!.set(type, [handler] as EventHandlerList<Events[Key]>);
-      }
+    on(handler: Handler<Event>) {
+      handlers.push(handler);
     },
 
     /**
-     * Remove an event handler for the given type.
+     * Remove an event handler.
      * If `handler` is omitted, all handlers of the given type are removed.
-     * @param type Type of event to unregister `handler` from (`'*'` to remove a wildcard handler)
+     *
      * @param handler Handler function to remove
      */
-    off<Key extends keyof Events>(type: Key, handler?: Handler<Events[Key]>) {
-      const handlers: Array<Handler<Events[Key]>> | undefined = all.get(type);
-      if (handlers) {
-        if (handler) {
-          handlers.splice(handlers.indexOf(handler) >>> 0, 1);
-        } else {
-          all!.set(type, []);
-        }
+    off<Key extends keyof Event>(handler?: Handler<Event>) {
+      if (handler) {
+        handlers.splice(handlers.indexOf(handler) >>> 0, 1);
+      } else {
+        handlers.length = 0;
       }
     },
 
     /**
      * Invoke all handlers for the given type.
-     * If present, `'*'` handlers are invoked after type-matched handlers.
      *
-     * Note: Manually firing '*' handlers is not supported.
-     *
-     * @param type The event type to invoke
-     * @param [evt] Any value (object is recommended and powerful), passed to each handler
+     * @param evt Any value (object is recommended and powerful), passed to each handler
      */
-    emit<Key extends keyof Events>(type: Key, evt?: Events[Key]) {
-      const handlers = all.get(type);
-      if (handlers) {
-        (handlers as EventHandlerList<Events[keyof Events]>)
-          .slice()
-          .map((handler) => {
-            handler(evt!);
-          });
-      }
+    emit(evt: Event) {
+      handlers
+        .slice()
+        .map((handler) => {
+          handler(evt);
+        });
     },
   };
 }

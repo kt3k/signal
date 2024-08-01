@@ -1,6 +1,6 @@
 // Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
 
-import mitt, { type Emitter } from "./mitt.ts";
+type Handler<T = unknown> = (event: T) => void;
 
 /**
  * Signal class.
@@ -8,10 +8,9 @@ import mitt, { type Emitter } from "./mitt.ts";
  * @experimental
  */
 export class Signal<T> {
-  #e: Emitter<T>;
   #val: T;
+  #handlers: Handler<T>[] = [];
   constructor(val: T) {
-    this.#e = mitt<T>();
     this.#val = val;
   }
 
@@ -32,7 +31,9 @@ export class Signal<T> {
   update(val: T) {
     if (this.#val !== val) {
       this.#val = val;
-      this.#e.emit(val);
+      this.#handlers.forEach((handler) => {
+        handler(val);
+      });
     }
   }
 
@@ -43,9 +44,9 @@ export class Signal<T> {
    * @returns A function to stop the subscription
    */
   onChange(cb: (val: T) => void): () => void {
-    this.#e.on(cb);
+    this.#handlers.push(cb);
     return () => {
-      this.#e.off(cb);
+      this.#handlers.splice(this.#handlers.indexOf(cb) >>> 0, 1);
     };
   }
 }

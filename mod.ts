@@ -8,10 +8,10 @@ import mitt, { type Emitter } from "./mitt.ts";
  * @experimental
  */
 export class Signal<T> {
-  #e: Emitter<{ e: T }>;
+  #e: Emitter<T>;
   #val: T;
   constructor(val: T) {
-    this.#e = mitt<{ e: T }>();
+    this.#e = mitt<T>();
     this.#val = val;
   }
 
@@ -32,7 +32,7 @@ export class Signal<T> {
   update(val: T) {
     if (this.#val !== val) {
       this.#val = val;
-      this.#e.emit("e", val);
+      this.#e.emit(val);
     }
   }
 
@@ -43,9 +43,9 @@ export class Signal<T> {
    * @returns A function to stop the subscription
    */
   onChange(cb: (val: T) => void): () => void {
-    this.#e.on("e", cb);
+    this.#e.on(cb);
     return () => {
-      this.#e.off("e", cb);
+      this.#e.off(cb);
     };
   }
 }

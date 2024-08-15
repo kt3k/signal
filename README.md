@@ -2,7 +2,9 @@
 
 > A data container which emits the event when the value is changed
 
-Lightweight framework agnostic implementation of signal [*1](https://preactjs.com/blog/introducing-signals/) [*2](https://www.solidjs.com/tutorial/introduction_signals).
+Lightweight framework agnostic implementation of signal
+[*1](https://preactjs.com/blog/introducing-signals/)
+[*2](https://www.solidjs.com/tutorial/introduction_signals).
 
 ## Install
 
@@ -17,6 +19,9 @@ deno add @kt3k/signal
 ```
 
 ## Usage
+
+Create a signal with `signal` function. Subscribe the value change with
+`onChange` method. Update the value with `update` method.
 
 ```ts
 import { signal } from "@kt3k/signal";
@@ -39,6 +44,10 @@ a.update(3); // No log because subscription is stopped
 ```
 
 ### `updateByFields`
+
+When you call`.update()`, the value is compared with the previous value with
+`===` equality. If you prefer to compare them with the equality of each field,
+use `.updateByFields()` method.
 
 ```ts
 import { signal } from "@kt3k/signal";

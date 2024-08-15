@@ -60,9 +60,11 @@ const stop = a.onChange((val) => {
   console.log(val);
 });
 
-a.update({ x: 0, y: 0 }); // this prints { x: 0, y: 0 } because the value equality is checked by ===
+a.update({ x: 0, y: 0 }); // this prints { x: 0, y: 0 } because the value equality
+                          // is checked by ===
 
-a.updateByFields({ x: 0, y: 0 }); // this doesn't print because the value equality is checked on each field
+a.updateByFields({ x: 0, y: 0 }); // this doesn't print because the value equality
+                                  // is checked on each field
 ```
 
 ## License

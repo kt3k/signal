@@ -10,5 +10,9 @@
     "dist": "deno run -A jsr:@kt3k/pack mod.ts -o dist.js",
     "min": "deno task dist && deno run -A npm:terser dist.js -o dist.min.js",
     "size": "deno task min && deno run --allow-read https://deno.land/x/gzip_size@v0.3.0/cli.ts --include-original dist.min.js"
-  }
+  },
+  "exclude": [
+    "dist.js",
+    "dist.min.js"
+  ]
 }

@@ -1,3 +1,5 @@
+// Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
+
 import { assertSpyCall, assertSpyCalls, spy } from "@std/testing/mock";
 import { assertEquals } from "@std/assert/equals";
 import { signal } from "./mod.ts";

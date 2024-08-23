@@ -1,6 +1,6 @@
 // Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
 
-type Handler<T = unknown> = (event: T) => void;
+type Handler<T = unknown> = (event: T) => void
 
 /**
  * Signal class.
@@ -8,10 +8,10 @@ type Handler<T = unknown> = (event: T) => void;
  * @experimental
  */
 export class Signal<T> {
-  #val: T;
-  #handlers: Handler<T>[] = [];
+  #val: T
+  #handlers: Handler<T>[] = []
   constructor(value: T) {
-    this.#val = value;
+    this.#val = value
   }
 
   /**
@@ -20,7 +20,7 @@ export class Signal<T> {
    * @returns The current value of the signal
    */
   get(): T {
-    return this.#val;
+    return this.#val
   }
 
   /**
@@ -30,10 +30,10 @@ export class Signal<T> {
    */
   update(value: T) {
     if (this.#val !== value) {
-      this.#val = value;
+      this.#val = value
       this.#handlers.forEach((handler) => {
-        handler(value);
-      });
+        handler(value)
+      })
     }
   }
 
@@ -44,16 +44,16 @@ export class Signal<T> {
    */
   updateByFields(value: T) {
     if (typeof value !== "object" || value === null) {
-      throw new Error("value must be an object");
+      throw new Error("value must be an object")
     }
     for (const key of Object.keys(value)) {
       // deno-lint-ignore no-explicit-any
       if ((this.#val as any)[key] !== (value as any)[key]) {
-        this.#val = { ...value };
+        this.#val = { ...value }
         this.#handlers.forEach((handler) => {
-          handler(this.#val);
-        });
-        break;
+          handler(this.#val)
+        })
+        break
       }
     }
   }
@@ -65,10 +65,10 @@ export class Signal<T> {
    * @returns A function to stop the subscription
    */
   onChange(cb: (val: T) => void): () => void {
-    this.#handlers.push(cb);
+    this.#handlers.push(cb)
     return () => {
-      this.#handlers.splice(this.#handlers.indexOf(cb) >>> 0, 1);
-    };
+      this.#handlers.splice(this.#handlers.indexOf(cb) >>> 0, 1)
+    }
   }
 }
 
@@ -101,5 +101,5 @@ export class Signal<T> {
  * @experimental
  */
 export function signal<T>(value: T): Signal<T> {
-  return new Signal(value);
+  return new Signal(value)
 }

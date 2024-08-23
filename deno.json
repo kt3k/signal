@@ -14,5 +14,10 @@
   "exclude": [
     "dist.js",
     "dist.min.js"
-  ]
+  ],
+  "fmt": {
+    "options": {
+      "semiColons": false
+    }
+  }
 }

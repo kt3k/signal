@@ -70,6 +70,17 @@ export class Signal<T> {
       this.#handlers.splice(this.#handlers.indexOf(cb) >>> 0, 1)
     }
   }
+
+  /**
+   * Subscribe to the signal.
+   *
+   * @param cb The callback function to be called when the signal is updated and also called immediately
+   * @returns A function to stop the subscription
+   */
+  subscribe(cb: (val: T) => void): () => void {
+    cb(this.#val)
+    return this.onChange(cb)
+  }
 }
 
 /**
@@ -83,11 +94,11 @@ export class Signal<T> {
  *
  * console.log(a.get()); // 1
  *
- * const stop = a.onChange((val) => {
+ * const stop = a.subscribe((val) => {
  *   console.log(val);
- * });
+ * }); // Logs 1
  *
- * a.update(2); // 2
+ * a.update(2); // Logs 2
  *
  * stop();
  *

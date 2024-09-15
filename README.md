@@ -28,13 +28,13 @@ import { signal } from "@kt3k/signal"
 
 const a = signal(1)
 
-console.log(a.get()) // prints 1
+console.log(a.get()) // Logs 1
 
-const stop = a.onChange((val) => {
+const stop = a.subscribe((val) => {
   console.log(val)
-})
+}) // Logs 1 (When you subscribe, the callback is immediately called)
 
-a.update(2) // prints 2
+a.update(2) // Logs 2
 
 a.update(2) // No log because of no value change
 

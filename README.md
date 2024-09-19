@@ -20,8 +20,8 @@ deno add @kt3k/signal
 
 ## Docs
 
-- [signal](https://jsr.io/@kt3k/signal/doc/~/signal)
-- [groupSignal](https://jsr.io/@kt3k/signal/doc/~/groupSignal)
+- [Signal](https://jsr.io/@kt3k/signal/doc/~/Signal)
+- [GroupSignal](https://jsr.io/@kt3k/signal/doc/~/GroupSignal)
 
 ## License
 

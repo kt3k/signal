@@ -2,10 +2,10 @@
 
 import { assertSpyCall, assertSpyCalls, spy } from "@std/testing/mock"
 import { assertEquals } from "@std/assert/equals"
-import { groupSignal, signal } from "./mod.ts"
+import { GroupSignal, Signal } from "./mod.ts"
 
-Deno.test("signal() creates Signal", () => {
-  const s = signal(1)
+Deno.test("new Signal() creates Signal", () => {
+  const s = new Signal(1)
 
   assertEquals(s.get(), 1)
 
@@ -36,8 +36,8 @@ Deno.test("signal() creates Signal", () => {
   assertSpyCalls(cb, 3)
 })
 
-Deno.test("groupSignal() creates Signal with object", () => {
-  const s = groupSignal({ x: 0, y: 0 })
+Deno.test("new GroupSignal() creates Signal with object", () => {
+  const s = new GroupSignal({ x: 0, y: 0 })
 
   assertEquals(s.get(), { x: 0, y: 0 })
 
@@ -60,7 +60,7 @@ Deno.test("groupSignal() creates Signal with object", () => {
 })
 
 Deno.test("signal().subscribe()", () => {
-  const s = signal(1)
+  const s = new Signal(1)
   const cb = spy()
 
   const stop = s.subscribe(cb)
@@ -85,8 +85,8 @@ Deno.test("signal().subscribe()", () => {
   assertSpyCalls(cb, 3)
 })
 
-Deno.test("signal().map() maps signal into another signal", () => {
-  const s = signal(1)
+Deno.test("new Signal().map() maps signal into another signal", () => {
+  const s = new Signal(1)
   const t = s.map((x) => x + 1)
 
   const cb = spy()
@@ -107,8 +107,8 @@ Deno.test("signal().map() maps signal into another signal", () => {
 
   stop()
 })
-Deno.test("groupSignal().map() maps signal into another signal", () => {
-  const s = groupSignal({ x: 1, y: 2 })
+Deno.test("new GroupSignal().map() maps signal into another signal", () => {
+  const s = new GroupSignal({ x: 1, y: 2 })
   const t = s.map((x) => ({ x: x.x + 1, y: x.y + 1 }))
 
   const cb = spy()

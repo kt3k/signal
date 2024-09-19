@@ -5,7 +5,28 @@ type Handler<T = unknown> = (event: T) => void
 /**
  * Atomic signal class.
  *
- * @experimental
+ * A signal is a value that can be updated and listened to.
+ *
+ * @example Usage
+ * ```ts
+ * import { Signal } from "@kt3k/signal";
+ *
+ * const a = new Signal(1);
+ *
+ * console.log(a.get()); // 1
+ *
+ * const stop = a.subscribe((val) => {
+ *   console.log(val);
+ * }); // Logs 1
+ *
+ * a.update(2); // Logs 2
+ *
+ * stop();
+ *
+ * a.update(3); // No log
+ * ```
+ *
+ * @typeParam T The type of the signal value
  */
 export class Signal<T> {
   #val: T
@@ -69,8 +90,32 @@ export class Signal<T> {
   }
 }
 
-/** A signal consists of a group of values */
-class GroupSignal<T> {
+/**
+ * A group signal is a signal that consists of a group of values.
+ * A group signal is useful when you want to listen to a group of values.
+ *
+ * @example Usage
+ * ```ts
+ * import { groupSignal } from "@kt3k/signal";
+ *
+ * const a = groupSignal({ x: 1, y: 2 });
+ *
+ * console.log(a.get()); // { x: 1, y: 2 }
+ *
+ * const stop = a.subscribe((val) => {
+ *   console.log(val);
+ * }); // Logs { x: 1, y: 2 }
+ *
+ * a.update({ x: 2, y: 1 }); // Logs { x: 2, y: 1 }
+ *
+ * a.update({ x: 2, y: 1 }); // No log
+ *
+ * stop();
+ *
+ * a.update({ x: 3, y: 1}); // No log
+ * ```
+ */
+export class GroupSignal<T> {
   #val: T
   #handlers: Handler<T>[] = []
   constructor(value: T) {
@@ -138,68 +183,4 @@ class GroupSignal<T> {
     this.onChange((val) => signal.update(fn(val)))
     return signal
   }
-}
-
-/**
- * A signal is a value that can be updated and listened to.
- *
- * @example Usage
- * ```ts
- * import { signal } from "@kt3k/signal";
- *
- * const a = signal(1);
- *
- * console.log(a.get()); // 1
- *
- * const stop = a.subscribe((val) => {
- *   console.log(val);
- * }); // Logs 1
- *
- * a.update(2); // Logs 2
- *
- * stop();
- *
- * a.update(3); // No log
- * ```
- *
- * @typeParam T The type of the signal value
- * @param value The initial value of the signal
- * @returns {Signal<T>}
- *
- * @experimental
- */
-export function signal<T>(value: T): Signal<T> {
-  return new Signal(value)
-}
-
-/**
- * A group signal is a signal that consists of a group of values.
- * A group signal is useful when you want to listen to a group of values.
- *
- * @example Usage
- * ```ts
- * import { groupSignal } from "@kt3k/signal";
- *
- * const a = groupSignal({ x: 1, y: 2 });
- *
- * console.log(a.get()); // { x: 1, y: 2 }
- *
- * const stop = a.subscribe((val) => {
- *   console.log(val);
- * }); // Logs { x: 1, y: 2 }
- *
- * a.update({ x: 2, y: 1 }); // Logs { x: 2, y: 1 }
- *
- * a.update({ x: 2, y: 1 }); // No log
- *
- * stop();
- *
- * a.update({ x: 3, y: 1}); // No log
- * ```
- *
- * @param value
- * @returns
- */
-export function groupSignal<T extends object>(value: T): GroupSignal<T> {
-  return new GroupSignal(value)
 }

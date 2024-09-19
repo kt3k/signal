@@ -16,8 +16,6 @@
     "dist.min.js"
   ],
   "fmt": {
-    "options": {
-      "semiColons": false
-    }
+    "semiColons": false
   }
 }

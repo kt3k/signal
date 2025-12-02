@@ -43,7 +43,7 @@ Deno.test("new GroupSignal() creates Signal with object", () => {
 
   const cb = spy()
 
-  const stop = s.onChange(cb)
+  using _ = s.onChange(cb)
 
   assertSpyCalls(cb, 0)
 
@@ -55,8 +55,6 @@ Deno.test("new GroupSignal() creates Signal with object", () => {
   s.update({ x: 1, y: 0 })
 
   assertSpyCalls(cb, 1)
-
-  stop()
 })
 
 Deno.test("signal().subscribe()", () => {
@@ -92,7 +90,7 @@ Deno.test("new Signal().map() maps signal into another signal", () => {
 
   const cb = spy()
 
-  const stop = t.onChange(cb)
+  using _ = t.onChange(cb)
 
   assertSpyCalls(cb, 0)
 
@@ -105,8 +103,6 @@ Deno.test("new Signal().map() maps signal into another signal", () => {
 
   assertSpyCalls(cb, 2)
   assertSpyCall(cb, 1, { args: [4] })
-
-  stop()
 })
 Deno.test("new GroupSignal().map() maps signal into another signal", () => {
   const s = new GroupSignal({ x: 1, y: 2 })
@@ -116,7 +112,7 @@ Deno.test("new GroupSignal().map() maps signal into another signal", () => {
 
   const cb = spy()
 
-  const stop = t.onChange(cb)
+  using _ = t.onChange(cb)
 
   assertSpyCalls(cb, 0)
 
@@ -133,8 +129,6 @@ Deno.test("new GroupSignal().map() maps signal into another signal", () => {
   s.update({ x: 4, y: 3 })
   assertSpyCalls(cb, 3)
   assertSpyCall(cb, 2, { args: [{ x: 7, y: 7 }] })
-
-  stop()
 })
 
 Deno.test("new Signal().mapGroup() maps signal into group signal", () => {
@@ -144,7 +138,7 @@ Deno.test("new Signal().mapGroup() maps signal into group signal", () => {
 
   const cb = spy()
 
-  const stop = t.onChange(cb)
+  using _ = t.onChange(cb)
 
   assertSpyCalls(cb, 0)
 
@@ -160,8 +154,6 @@ Deno.test("new Signal().mapGroup() maps signal into group signal", () => {
 
   s.update(9)
   assertSpyCalls(cb, 2) // doesn't produce the 3rd change because { a: 1, b: 0 } is same as previous value
-
-  stop()
 })
 
 Deno.test("new GroupSignal().mapGroup() maps group signal into another group signal", () => {
@@ -172,7 +164,7 @@ Deno.test("new GroupSignal().mapGroup() maps group signal into another group sig
 
   const cb = spy()
 
-  const stop = t.onChange(cb)
+  using _ = t.onChange(cb)
 
   assertSpyCalls(cb, 0)
 
@@ -188,6 +180,4 @@ Deno.test("new GroupSignal().mapGroup() maps group signal into another group sig
 
   s.update({ x: 5, y: 4 })
   assertSpyCalls(cb, 2) // doesn't produce the 3rd change because { a: 1, b: 1 } is same as previous value
-
-  stop()
 })

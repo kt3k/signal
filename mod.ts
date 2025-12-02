@@ -64,11 +64,18 @@ export class Signal<T> {
    * @param cb The callback function to be called when the signal is updated
    * @returns A function to stop the subscription
    */
-  onChange(cb: (val: T) => void): () => void {
+  onChange(
+    cb: (val: T) => void,
+  ): (() => void) & { [Symbol.dispose](): void } {
     this.#handlers.push(cb)
-    return () => {
+    const cleanUp = () => {
       this.#handlers.splice(this.#handlers.indexOf(cb) >>> 0, 1)
     }
+    return Object.assign(cleanUp, {
+      [Symbol.dispose]() {
+        cleanUp()
+      },
+    })
   }
 
   /**
@@ -171,11 +178,16 @@ export class GroupSignal<T extends Record<string, unknown>> {
    * @param cb The callback function to be called when the signal is updated
    * @returns A function to stop the subscription
    */
-  onChange(cb: (val: T) => void): () => void {
+  onChange(cb: (val: T) => void): (() => void) & { [Symbol.dispose](): void } {
     this.#handlers.push(cb)
-    return () => {
+    const cleanUp = () => {
       this.#handlers.splice(this.#handlers.indexOf(cb) >>> 0, 1)
     }
+    return Object.assign(cleanUp, {
+      [Symbol.dispose]() {
+        cleanUp()
+      },
+    })
   }
 
   /**

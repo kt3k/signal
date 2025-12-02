@@ -1,4 +1,4 @@
-version: 0.3.0
-commit: 'chore: v%.%.%'
+version: 0.4.0
+commit: "chore: v%.%.%"
 files:
   deno.json: '"version": "%.%.%"'

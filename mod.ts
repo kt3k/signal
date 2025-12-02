@@ -82,17 +82,29 @@ export class Signal<T> {
     return this.onChange(cb)
   }
 
-  /** Maps the signal to a different signal */
+  /** Maps the {@code Signal} to another {@code Signal} */
   map<U>(fn: (val: T) => U): Signal<U> {
     const signal = new Signal(fn(this.#val))
+    this.onChange((val) => signal.update(fn(val)))
+    return signal
+  }
+
+  /** Maps the {@code Signal} to a {@code GroupSignal} */
+  mapGroup<U extends Record<string, unknown>>(
+    fn: (val: T) => U,
+  ): GroupSignal<U> {
+    const signal = new GroupSignal(fn(this.#val))
     this.onChange((val) => signal.update(fn(val)))
     return signal
   }
 }
 
 /**
- * A group signal is a signal that consists of a group of values.
- * A group signal is useful when you want to listen to a group of values.
+ * A {@code GroupSignal} is a signal that consists of a group of values.
+ *
+ * A group signal holds an object as its value and notifies subscribers when one or more fields of the object change.
+ *
+ * A group signal doesn't compare the value with reference equality but compares each field of the object for changes.
  *
  * @example Usage
  * ```ts
@@ -115,7 +127,7 @@ export class Signal<T> {
  * a.update({ x: 3, y: 1}); // No log
  * ```
  */
-export class GroupSignal<T> {
+export class GroupSignal<T extends Record<string, unknown>> {
   #val: T
   #handlers: Handler<T>[] = []
   constructor(value: T) {
@@ -177,8 +189,17 @@ export class GroupSignal<T> {
     return this.onChange(cb)
   }
 
-  /** Maps the signal to a different signal */
-  map<U>(fn: (val: T) => U): GroupSignal<U> {
+  /** Maps the {@code GroupSignal} to another {@code Signal} */
+  map<U>(fn: (val: T) => U): Signal<U> {
+    const signal = new Signal(fn(this.#val))
+    this.onChange((val) => signal.update(fn(val)))
+    return signal
+  }
+
+  /** Maps the {@code GroupSignal} to another {@code GroupSignal} */
+  mapGroup<U extends Record<string, unknown>>(
+    fn: (val: T) => U,
+  ): GroupSignal<U> {
     const signal = new GroupSignal(fn(this.#val))
     this.onChange((val) => signal.update(fn(val)))
     return signal

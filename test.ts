@@ -1,7 +1,7 @@
 // Copyright 2024 Yoshiya Hinosawa. All rights reserved. MIT license.
 
 import { assertSpyCall, assertSpyCalls, spy } from "@std/testing/mock"
-import { assertEquals } from "@std/assert/equals"
+import { assertEquals, assertInstanceOf } from "@std/assert"
 import { GroupSignal, Signal } from "./mod.ts"
 
 Deno.test("new Signal() creates Signal", () => {
@@ -88,6 +88,7 @@ Deno.test("signal().subscribe()", () => {
 Deno.test("new Signal().map() maps signal into another signal", () => {
   const s = new Signal(1)
   const t = s.map((x) => x + 1)
+  assertInstanceOf(t, Signal)
 
   const cb = spy()
 
@@ -109,7 +110,9 @@ Deno.test("new Signal().map() maps signal into another signal", () => {
 })
 Deno.test("new GroupSignal().map() maps signal into another signal", () => {
   const s = new GroupSignal({ x: 1, y: 2 })
-  const t = s.map((x) => ({ x: x.x + 1, y: x.y + 1 }))
+  const t = s.map((x) => ({ x: x.x + x.y, y: x.y + x.x }))
+
+  assertInstanceOf(t, Signal)
 
   const cb = spy()
 
@@ -120,12 +123,71 @@ Deno.test("new GroupSignal().map() maps signal into another signal", () => {
   s.update({ x: 2, y: 3 })
 
   assertSpyCalls(cb, 1)
-  assertSpyCall(cb, 0, { args: [{ x: 3, y: 4 }] })
+  assertSpyCall(cb, 0, { args: [{ x: 5, y: 5 }] })
 
   s.update({ x: 3, y: 4 })
 
   assertSpyCalls(cb, 2)
-  assertSpyCall(cb, 1, { args: [{ x: 4, y: 5 }] })
+  assertSpyCall(cb, 1, { args: [{ x: 7, y: 7 }] })
+
+  s.update({ x: 4, y: 3 })
+  assertSpyCalls(cb, 3)
+  assertSpyCall(cb, 2, { args: [{ x: 7, y: 7 }] })
+
+  stop()
+})
+
+Deno.test("new Signal().mapGroup() maps signal into group signal", () => {
+  const s = new Signal(1)
+  const t = s.mapGroup((x) => ({ a: x % 2, b: x % 3 }))
+  assertInstanceOf(t, GroupSignal)
+
+  const cb = spy()
+
+  const stop = t.onChange(cb)
+
+  assertSpyCalls(cb, 0)
+
+  s.update(2)
+
+  assertSpyCalls(cb, 1)
+  assertSpyCall(cb, 0, { args: [{ a: 0, b: 2 }] })
+
+  s.update(3)
+
+  assertSpyCalls(cb, 2)
+  assertSpyCall(cb, 1, { args: [{ a: 1, b: 0 }] })
+
+  s.update(9)
+  assertSpyCalls(cb, 2) // doesn't produce the 3rd change because { a: 1, b: 0 } is same as previous value
+
+  stop()
+})
+
+Deno.test("new GroupSignal().mapGroup() maps group signal into another group signal", () => {
+  const s = new GroupSignal({ x: 1, y: 2 })
+  const t = s.mapGroup((x) => ({ a: x.x % 2, b: x.y % 3 }))
+
+  assertInstanceOf(t, GroupSignal)
+
+  const cb = spy()
+
+  const stop = t.onChange(cb)
+
+  assertSpyCalls(cb, 0)
+
+  s.update({ x: 2, y: 3 })
+
+  assertSpyCalls(cb, 1)
+  assertSpyCall(cb, 0, { args: [{ a: 0, b: 0 }] })
+
+  s.update({ x: 3, y: 4 })
+
+  assertSpyCalls(cb, 2)
+  assertSpyCall(cb, 1, { args: [{ a: 1, b: 1 }] })
+
+  s.update({ x: 5, y: 4 })
+  assertSpyCalls(cb, 2) // doesn't produce the 3rd change because { a: 1, b: 1 } is same as previous value
 
   stop()
 })
